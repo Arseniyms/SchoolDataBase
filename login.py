@@ -22,7 +22,7 @@ def logInForm():
         if username != '' or password != '':
             if getLogin(username) and getPassword(username, password):
                 window.destroy()
-                mainApp()
+                mainApp(username)
             else:
                 wrong_password_label = Label(window, text='Неправильный логин или пароль', font=label_font, **base_padding, foreground='red')
                 wrong_password_label['background'] = 'white'
