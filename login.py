@@ -1,5 +1,5 @@
 from tkinter import *
-from mainApp import mainApp
+import mainApp
 from queries import *
 
 def logInForm():
@@ -8,6 +8,7 @@ def logInForm():
     window.geometry('450x250')
     window.resizable(False, False)
     window['background'] = 'white'
+    q = Query()
 
     font_header = ('Times New Roman', 15, 'bold')
     font_entry = ('Times New Roman', 12)
@@ -20,9 +21,9 @@ def logInForm():
         username = username_entry.get()
         password = password_entry.get()
         if username != '' or password != '':
-            if getLogin(username) and getPassword(username, password):
+            if q.getLogin(username) and q.getPassword(username, password):
                 window.destroy()
-                mainApp(username)
+                mainApp.mainApp(username)
             else:
                 wrong_password_label = Label(window, text='Неправильный логин или пароль', font=label_font, **base_padding, foreground='red')
                 wrong_password_label['background'] = 'white'
@@ -54,3 +55,4 @@ def logInForm():
     send_btn.pack(**base_padding)
 
     window.mainloop()
+
