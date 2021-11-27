@@ -1,10 +1,11 @@
 import tkinter
 from tkinter import *
-
 import login
 from queries import *
 import tkinter.messagebox as mb
 
+
+label_font = ('Times New Roman', 10)
 def log_out(window):
     window.destroy()
     login.logInForm()
@@ -25,13 +26,71 @@ def exit_click(window, user):
     mainApp(q.getUserLoginByID(user.idUser))
 
 
+def confirm_pass_change(pass_wind, user, old_pass, new_pass, confirm_pass):
+    conf = mb.askokcancel("Изменение пароля", 'Вы уверены, что хотите изменить пароль?')
+    if conf:
+        q = Query()
+        login = q.getUserLoginByID(user.idUser)
+        ifPass = q.getPassword(login, old_pass.get())
+        wrong_pass_label = Label(pass_wind, font=('Times New Roman', 10, 'bold'),
+                                 fg="red", bg="white")
+        if ifPass:
+            if confirm_pass.get() != '' and new_pass.get() == confirm_pass.get():
+                q.changePassword(user.idUser, new_pass.get())
+                mb.showinfo('Изменение пароля', 'Пароль успешно изменен!')
+                pass_wind.destroy()
+            else:
+                wrong_pass_label.config(text='Пароли не совпадают')
+                wrong_pass_label.grid(column=0, row=10, sticky='w')
+        else:
+            wrong_pass_label.config(text='Неверный пароль      ')
+            wrong_pass_label.grid(column=0, row=10, sticky='w')
+
+        # pass_wind.destroy()
+        # window.destroy()
+        # mainApp(q.getUserLoginByID(user.idUser))
+
+
+def password_change(window, user):
+    pass_wind = Toplevel()
+    pass_wind.title('Изменение информации')
+    pass_wind.geometry('350x200')
+    pass_wind['background'] = 'white'
+    pass_wind.grab_set()
+
+    old_pass_label = Label(pass_wind, text='Старый пароль    ', font=label_font, fg="black", bg="white")
+    old_pass_label.grid(column=0, row=0,sticky='w')
+    old_pass = Entry(pass_wind, font=label_font, show='*', fg="black", bg="white", width=30)
+    old_pass.grid(column=1, row=0, sticky='e')
+
+    new_pass_label = Label(pass_wind, text='Новый пароль    ', font=label_font, fg="black", bg="white")
+    new_pass_label.grid(column=0, row=1, sticky='w')
+    new_pass = Entry(pass_wind, font=label_font, show='*', fg="black", bg="white", width=30)
+    new_pass.grid(column=1, row=1, sticky='e')
+
+    confirm_pass_label = Label(pass_wind, text='Подтвердите пароль    ', font=label_font, fg="black", bg="white")
+    confirm_pass_label.grid(column=0, row=2, sticky='w')
+    confirm_pass = Entry(pass_wind, font=label_font, show='*', fg="black", bg="white", width=30)
+    confirm_pass.grid(column=1, row=2, sticky='e')
+
+    exit_button = Button(pass_wind, text='Назад', fg="black", bg="white",
+                            command=lambda: pass_wind.destroy())
+    exit_button.grid(column=1, row=10, sticky='w')
+
+    confirm_button = Button(pass_wind, text='Изменить пароль', fg="black", bg="white",
+                            command= lambda :confirm_pass_change(pass_wind, user, old_pass, new_pass, confirm_pass))
+    confirm_button.grid(column=1, row=10, sticky='e')
+
+
+
+
 def change_info(window, user):
     window.destroy()
     window = Tk()
     window.title('Изменение информации')
     window.geometry('400x250')
     window['background'] = 'white'
-    label_font = ('Times New Roman', 10)
+
     name_label = Label(window, text='Введите информацию, которую хотите изменить    ', font=label_font, fg="black",
                        bg="white")
     name_label.grid(column=0, row=0)
@@ -64,7 +123,7 @@ def change_info(window, user):
     confirm_button.grid(column=0, row=10, sticky='e')
 
     password_button = Button(window, text='Изменить пароль', fg="black", bg="white",
-                            command=None)
+                            command=lambda: password_change(window, user))
     password_button.grid(column=0, row=10, sticky='w')
 
     exit_button = Button(window, text='Отмена', fg="black", bg="white",

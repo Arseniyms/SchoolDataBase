@@ -67,8 +67,12 @@ class Query:
         self.cursor.execute(f"SELECT password from Users where login ='{login}'")
         ifPass = str.encode(self.cursor.fetchone().password)
         password = bcrypt.hashpw(str.encode(password), key)
-        # ifPass = f.decrypt(str.encode(ifPass)).decode()
-        print(password)
         if ifPass == password:
             return True
         return None
+
+    def changePassword(self, idUser, password):
+        password = bcrypt.hashpw(str.encode(password), key)
+        self.cursor.execute(f"UPDATE Users Set password = '{password.decode()}' where idUser ='{idUser}'")
+        self.connection_to_db.commit()
+
