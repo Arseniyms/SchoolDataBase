@@ -4,8 +4,9 @@ from login import logInForm
 from mainApp import mainApp
 from queries import *
 
-# logInForm()
-mainApp('T1')
+
+logInForm()
+# mainApp('T1')
 
 
 

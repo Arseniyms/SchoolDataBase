@@ -1,9 +1,9 @@
 import pyodbc
-from cryptography.fernet import Fernet
+import bcrypt
 
 from tools import *
 
-key = b'OlboXezUYLMgXl7NcM6SO2fkW3r0hJ00aMYhSubM3rQ='
+key = b'$2b$12$COnvlB9Kses3CthyxNl9pu'
 
 
 class Query:
@@ -64,10 +64,11 @@ class Query:
         return self.cursor.fetchone()
 
     def getPassword(self, login, password):
-        f = Fernet(key)
         self.cursor.execute(f"SELECT password from Users where login ='{login}'")
-        ifPass = self.cursor.fetchone().password
-        ifPass = f.decrypt(str.encode(ifPass)).decode()
+        ifPass = str.encode(self.cursor.fetchone().password)
+        password = bcrypt.hashpw(str.encode(password), key)
+        # ifPass = f.decrypt(str.encode(ifPass)).decode()
+        print(password)
         if ifPass == password:
-            return ifPass
+            return True
         return None

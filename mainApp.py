@@ -3,7 +3,7 @@ from tkinter import *
 
 import login
 from queries import *
-
+import tkinter.messagebox as mb
 
 def log_out(window):
     window.destroy()
@@ -12,11 +12,11 @@ def log_out(window):
 
 def confirm_change(window, user, name_text, date_text, phone_text, mail_text):
     q = Query()
-    print(name_text.get())
     q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get(),)
-
-    window.destroy()
-    mainApp(q.getUserLoginByID(user.idUser))
+    conf = mb.askokcancel("Изменение данных", 'Вы уверены, что хотите изменить данные?')
+    if conf:
+        window.destroy()
+        mainApp(q.getUserLoginByID(user.idUser))
 
 
 def exit_click(window, user):
@@ -63,10 +63,20 @@ def change_info(window, user):
                             command=lambda: confirm_change(window, user, name_text, date_text, phone_text, mail_text))
     confirm_button.grid(column=0, row=10, sticky='e')
 
-    exit_button = Button(window, text='Выйти', fg="black", bg="white",
+    password_button = Button(window, text='Изменить пароль', fg="black", bg="white",
+                            command=None)
+    password_button.grid(column=0, row=10, sticky='w')
+
+    exit_button = Button(window, text='Отмена', fg="black", bg="white",
                             command=lambda: exit_click(window, user))
-    exit_button.grid(column=0, row=10, sticky='w')
+    exit_button.grid(column=0, row=11, sticky='w')
     window.mainloop()
+
+
+def info_clicked(user):
+    info = user.name + '\nДата рождения:' + user.dateOfBrith + '\nОпыт работы:' + str(user.experience) + '\nЭл.почта: ' + user.mail + '\nНомер телефона: +' + user.phoneNumber
+
+    mb.showinfo("Информация", info)
 
 
 def mainApp(login):
@@ -85,12 +95,24 @@ def mainApp(login):
     info.configure(state='disable')
     info.grid(sticky="E", column=0, row=0)
 
+    info_button = Button(window, text='Посмотреть информацию', fg="black", bg="white", command=lambda:info_clicked(user))
+    info_button.grid(sticky="W", column=1, row=0)
+
+    timetable_button = Button(window, text='Посмотреть расписание', fg="black", bg="white", command=None)
+    timetable_button.grid(sticky="W", column=0, row=1)
+
+    grades_button = Button(window, text='Посмотреть успеваемость', fg="black", bg="white", command=None)
+    grades_button.grid(sticky="W", column=0, row=2)
+
+    record_button = Button(window, text='Открыть журнал', fg="black", bg="white", command=None)
+    record_button.grid(sticky="W", column=0, row=3)
+
     log_out_button = Button(window, text='Выйти', fg="black", bg="white", command=lambda: log_out(window))
     log_out_button.grid(sticky="W", column=0, row=10)
 
     change_info_button = Button(window, text='Изменить данные', fg="black", bg="white",
                                 command=lambda: change_info(window, user))
-    change_info_button.grid(sticky="E", column=0, row=10)
+    change_info_button.grid(sticky="E", column=1, row=10)
     # def teacherChosen(event):
     #     lbl = Label(window, text=comboTeachers.get())
     #     lbl.grid(column=1, row=0)
