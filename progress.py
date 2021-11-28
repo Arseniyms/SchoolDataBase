@@ -1,9 +1,17 @@
 from tkinter import *
 from tkinter import ttk
 
+import mainApp
 from queries import Query
 
 label_font = ('Times New Roman', 10)
+
+def exit_clicked(window, user):
+    q = Query()
+    window.destroy()
+    mainApp.mainApp(q.getUserLoginByID(user.idUser))
+
+
 
 def showProgress(window, user):
     window.destroy()
@@ -17,11 +25,12 @@ def showProgress(window, user):
     class_box.set('Выберите класс')
     class_box.grid(column=0, row=0, sticky='w')
 
+    exit_button = Button(window, text='Назад', fg="black", bg="white", command=lambda: exit_clicked(window, user))
+    exit_button.grid(column = 0, row = 10, sticky='w')
 
     grades_label = Label(window, text='', justify=LEFT, font=label_font, fg="black", bg="white")
 
     def class_chosen(event):
-        q = Query()
         numClass = class_box.get()
         grades = q.getProgressForClass(numClass)
         grades_label.grid_forget()
@@ -49,7 +58,6 @@ def showProgress(window, user):
                 text += str(grades[i+1][2]) + ' ' # оценка
             grades_label.configure(text=text)
             grades_label.grid(column = 0, row=1, sticky='w')
-            print(grades)
             def student_chosen(event):
                 text = ''
                 if len(grades) != 0:

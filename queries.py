@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pyodbc
 import bcrypt
 
@@ -143,3 +145,14 @@ class Query:
                 break
             grades.append(gr)
         return grades
+
+
+    def put_grade(self, nameStudent, numClass, nameSubject, grade, dateOfGrade):
+        self.cursor.execute(f"""INSERT INTO Grades(idStudent, idTeacherSubject, Grade, DateOfGrade)
+                                VALUES((Select idStudent from Students where Name='{nameStudent}'),
+                                        (Select DISTINCT TeacherSubjects.idTeacherSubject from TeacherSubjects 
+                                            JOIN Subjects ON Subjects.idSubject = TeacherSubjects.idSubject
+                                            JOIN Timetable ON Timetable.idTeacherSubject = TeacherSubjects.idTeacherSubject
+                                            WHERE Subjects.NameOfSubject='{nameSubject}' and Timetable.numClass = (Select numClass from Students where name ='{nameStudent}' and numClass ='{numClass}')),
+                                            {grade}, '{dateOfGrade}')""")
+        self.connection_to_db.commit()

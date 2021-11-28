@@ -1,4 +1,6 @@
 from tkinter import *
+
+import classBook
 import login
 import progress
 from queries import *
@@ -171,8 +173,8 @@ def mainApp(login):
     grades_button = Button(window, text='Посмотреть успеваемость', fg="black", bg="white", command=lambda: progress.showProgress(window, user))
     grades_button.grid(sticky="W", column=0, row=2)
 
-    record_button = Button(window, text='Открыть журнал', fg="black", bg="white", command=None)
-    record_button.grid(sticky="W", column=0, row=3)
+    class_book_button = Button(window, text='Открыть журнал', fg="black", bg="white", command=lambda: classBook.class_book(window, user))
+    class_book_button.grid(sticky="W", column=0, row=3)
 
     log_out_button = Button(window, text='Выйти', fg="black", bg="white", command=lambda: log_out(window))
     log_out_button.grid(sticky="W", column=0, row=10)
@@ -180,29 +182,5 @@ def mainApp(login):
     change_info_button = Button(window, text='Изменить данные', fg="black", bg="white",
                                 command=lambda: change_info(window, user))
     change_info_button.grid(sticky="E", column=1, row=10)
-    # def teacherChosen(event):
-    #     lbl = Label(window, text=comboTeachers.get())
-    #     lbl.grid(column=1, row=0)
-    #
-    #
-    # def studentsChosen(event):
-    #     lbl = Label(window, text=comboStudents.get())
-    #     lbl.grid(column=1, row=1)
-
-    #
-    # comboTeachers = Combobox(window)
-    # comboTeachers['state']= 'readonly'
-    # comboTeachers.set("Выберите учителя")
-    # comboTeachers['values'] = (getTeachersNames())
-    # comboTeachers.grid(column=0, row=0)
-    #
-    # comboStudents = Combobox(window)
-    # comboStudents['state']= 'readonly'
-    # comboStudents.set("Выберите ученика")
-    # comboStudents['values'] = (getStudentsNames())
-    # comboStudents.grid(column=0, row=1)
-    #
-    # comboTeachers.bind('<<ComboboxSelected>>', teacherChosen)
-    # comboStudents.bind('<<ComboboxSelected>>', studentsChosen)
 
     window.mainloop()

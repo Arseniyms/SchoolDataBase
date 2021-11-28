@@ -9,4 +9,3 @@ from queries import *
 mainApp('T1')
 
 
-
