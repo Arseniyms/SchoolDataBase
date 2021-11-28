@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pyodbc
 import bcrypt
 
@@ -136,7 +134,7 @@ class Query:
                                     JOIN Students ON Students.idStudent = Grades.idStudent
                                     JOIN TeacherSubjects ON TeacherSubjects.idTeacherSubject = Grades.idTeacherSubject
                                     JOIN Subjects ON TeacherSubjects.idSubject = Subjects.idSubject
-                                        WHERE Students.Name = {idStudent}
+                                        WHERE Students.idStudent = {idStudent}
                                             ORDER BY NameOfSubject""")
         grades = []
         while True:
@@ -156,3 +154,8 @@ class Query:
                                             WHERE Subjects.NameOfSubject='{nameSubject}' and Timetable.numClass = (Select numClass from Students where name ='{nameStudent}' and numClass ='{numClass}')),
                                             {grade}, '{dateOfGrade}')""")
         self.connection_to_db.commit()
+
+    def getTimeTableForClass(self, numClass):
+        self.cursor.execute(f"EXEC sp_set_session_context 'numClass', '{numClass}'")
+        self.cursor.execute(f'Select * FROM CLASS_TIMETABLE order by dayOfWeek ASC, time ASC')
+        return self.cursor.fetchall()

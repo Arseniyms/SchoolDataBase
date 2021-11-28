@@ -51,9 +51,6 @@ def confirm_pass_change(pass_wind, user, old_pass, new_pass, confirm_pass):
             wrong_pass_label.config(text='Неверный пароль      ')
             wrong_pass_label.grid(column=0, row=10, sticky='w')
 
-        # pass_wind.destroy()
-        # window.destroy()
-        # mainApp(q.getUserLoginByID(user.idUser))
 
 
 def password_change(window, user):

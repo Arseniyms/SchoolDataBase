@@ -1,5 +1,6 @@
 from tkinter import *
 import mainApp
+import studentApp
 from queries import *
 
 def logInForm():
@@ -23,7 +24,13 @@ def logInForm():
         if username != '' or password != '':
             if q.getLogin(username) and q.getPassword(username, password):
                 window.destroy()
-                mainApp.mainApp(username)
+                idUser = q.getUserIdByLogin(username)
+                user = q.getUserInfo(idUser)
+                if user.status == 'Учитель':
+                    mainApp.mainApp(username)
+                elif user.status == 'Ученик':
+                    studentApp.studentApp(username)
+
             else:
                 wrong_password_label = Label(window, text='Неправильный логин или пароль', font=label_font, **base_padding, foreground='red')
                 wrong_password_label['background'] = 'white'
