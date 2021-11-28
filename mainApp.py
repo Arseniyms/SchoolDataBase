@@ -1,5 +1,6 @@
 from tkinter import *
 import login
+import progress
 from queries import *
 import tkinter.messagebox as mb
 
@@ -167,7 +168,7 @@ def mainApp(login):
     timetable_button = Button(window, text='Посмотреть расписание', fg="black", bg="white", command=lambda: timetable.show_table_for_teacher(window, user))
     timetable_button.grid(sticky="W", column=0, row=1)
 
-    grades_button = Button(window, text='Посмотреть успеваемость', fg="black", bg="white", command=None)
+    grades_button = Button(window, text='Посмотреть успеваемость', fg="black", bg="white", command=lambda: progress.showProgress(window, user))
     grades_button.grid(sticky="W", column=0, row=2)
 
     record_button = Button(window, text='Открыть журнал', fg="black", bg="white", command=None)

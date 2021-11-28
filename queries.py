@@ -21,9 +21,14 @@ class Query:
         return teachersName
 
     def getStudentsNames(self):
-        self.cursor.execute('Select Name from Students')
-        studentsName = self.cursor.fetchall()
-        return studentsName
+        self.cursor.execute('Select idStudent, Name from Students ORDER BY Name')
+        return self.cursor.fetchall()
+
+    def getStudentsNamesByClass(self, numClass):
+        self.cursor.execute(f"Select idStudent, Name from Students Where NumClass = '{numClass}' ORDER BY Name")
+
+        return self.cursor.fetchall()
+
 
     def changeInfoOfUser(self, idLocal, newName, dateOfBirth, phoneNumber, mail, activity=1):
         self.cursor.execute(
@@ -96,3 +101,45 @@ class Query:
         self.cursor.execute(f"EXEC sp_set_session_context 'idTeacher', {idTeacher}")
         self.cursor.execute(f'Select * FROM TEACHER_TIMETABLE ORDER BY dayOfWeek ASC, time ASC')
         return self.cursor.fetchall()
+
+
+    def getClasses(self):
+        self.cursor.execute(f"Select numClass FROM Classes")
+        classes = []
+        while True:
+            cl = self.cursor.fetchone()
+            if cl == None:
+                break
+            classes.append(cl.numClass)
+        return classes
+
+    def getProgressForClass(self, numClass):
+        self.cursor.execute(f"""Select Subjects.NameOfSubject, Students.Name, Grade from Grades 
+	                                JOIN Students ON Students.idStudent = Grades.idStudent
+	                                JOIN TeacherSubjects ON TeacherSubjects.idTeacherSubject = Grades.idTeacherSubject
+	                                JOIN Subjects ON TeacherSubjects.idSubject = Subjects.idSubject
+                                        WHERE Students.NumClass = '{numClass}'
+                                            ORDER BY NameOfSubject, Name""")
+        grades = []
+        while True:
+            gr = self.cursor.fetchone()
+            if gr == None:
+                break
+            grades.append(gr)
+        return grades
+
+
+    def getProgressOfStudent(self, idStudent):
+        self.cursor.execute(f"""Select Subjects.NameOfSubject, Grade from Grades
+                                    JOIN Students ON Students.idStudent = Grades.idStudent
+                                    JOIN TeacherSubjects ON TeacherSubjects.idTeacherSubject = Grades.idTeacherSubject
+                                    JOIN Subjects ON TeacherSubjects.idSubject = Subjects.idSubject
+                                        WHERE Students.Name = {idStudent}
+                                            ORDER BY NameOfSubject""")
+        grades = []
+        while True:
+            gr = self.cursor.fetchone()
+            if gr == None:
+                break
+            grades.append(gr)
+        return grades
