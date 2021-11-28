@@ -1,11 +1,13 @@
-import tkinter
 from tkinter import *
 import login
 from queries import *
 import tkinter.messagebox as mb
 
+import timetable
 
 label_font = ('Times New Roman', 10)
+
+
 def log_out(window):
     window.destroy()
     login.logInForm()
@@ -13,7 +15,7 @@ def log_out(window):
 
 def confirm_change(window, user, name_text, date_text, phone_text, mail_text):
     q = Query()
-    q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get(),)
+    q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get(), )
     conf = mb.askokcancel("Изменение данных", 'Вы уверены, что хотите изменить данные?')
     if conf:
         window.destroy()
@@ -59,7 +61,7 @@ def password_change(window, user):
     pass_wind.grab_set()
 
     old_pass_label = Label(pass_wind, text='Старый пароль    ', font=label_font, fg="black", bg="white")
-    old_pass_label.grid(column=0, row=0,sticky='w')
+    old_pass_label.grid(column=0, row=0, sticky='w')
     old_pass = Entry(pass_wind, font=label_font, show='*', fg="black", bg="white", width=30)
     old_pass.grid(column=1, row=0, sticky='e')
 
@@ -74,14 +76,12 @@ def password_change(window, user):
     confirm_pass.grid(column=1, row=2, sticky='e')
 
     exit_button = Button(pass_wind, text='Назад', fg="black", bg="white",
-                            command=lambda: pass_wind.destroy())
+                         command=lambda: pass_wind.destroy())
     exit_button.grid(column=1, row=10, sticky='w')
 
     confirm_button = Button(pass_wind, text='Изменить пароль', fg="black", bg="white",
-                            command= lambda :confirm_pass_change(pass_wind, user, old_pass, new_pass, confirm_pass))
+                            command=lambda: confirm_pass_change(pass_wind, user, old_pass, new_pass, confirm_pass))
     confirm_button.grid(column=1, row=10, sticky='e')
-
-
 
 
 def change_info(window, user):
@@ -123,18 +123,24 @@ def change_info(window, user):
     confirm_button.grid(column=0, row=10, sticky='e')
 
     password_button = Button(window, text='Изменить пароль', fg="black", bg="white",
-                            command=lambda: password_change(window, user))
+                             command=lambda: password_change(window, user))
     password_button.grid(column=0, row=10, sticky='w')
 
     exit_button = Button(window, text='Отмена', fg="black", bg="white",
-                            command=lambda: exit_click(window, user))
+                         command=lambda: exit_click(window, user))
     exit_button.grid(column=0, row=11, sticky='w')
     window.mainloop()
 
 
 def info_clicked(user):
-    info = user.name + '\nДата рождения:' + user.dateOfBrith + '\nОпыт работы:' + str(user.experience) + '\nЭл.почта: ' + user.mail + '\nНомер телефона: +' + user.phoneNumber
-
+    q = Query()
+    info = (user.name + '\nДата рождения: ' + user.dateOfBrith + '\nОпыт работы: ' +
+            str(user.experience) + '\nЭл.почта: ' + user.mail + '\nНомер телефона: +' + user.phoneNumber + '\nПредметы: ')
+    subjects = q.getTeacherSubjects(user.idLocal)
+    for s in subjects:
+        if s != subjects[0]:
+            info += ', '
+        info += s
     mb.showinfo("Информация", info)
 
 
@@ -154,10 +160,11 @@ def mainApp(login):
     info.configure(state='disable')
     info.grid(sticky="E", column=0, row=0)
 
-    info_button = Button(window, text='Посмотреть информацию', fg="black", bg="white", command=lambda:info_clicked(user))
+    info_button = Button(window, text='Посмотреть информацию', fg="black", bg="white",
+                         command=lambda: info_clicked(user))
     info_button.grid(sticky="W", column=1, row=0)
 
-    timetable_button = Button(window, text='Посмотреть расписание', fg="black", bg="white", command=None)
+    timetable_button = Button(window, text='Посмотреть расписание', fg="black", bg="white", command=lambda: timetable.show_table_for_teacher(window, user))
     timetable_button.grid(sticky="W", column=0, row=1)
 
     grades_button = Button(window, text='Посмотреть успеваемость', fg="black", bg="white", command=None)

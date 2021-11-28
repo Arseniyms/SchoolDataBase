@@ -76,3 +76,23 @@ class Query:
         self.cursor.execute(f"UPDATE Users Set password = '{password.decode()}' where idUser ='{idUser}'")
         self.connection_to_db.commit()
 
+
+    # Вывод предметов, закрепленных за учителем
+    def getTeacherSubjects(self, idTeacher):
+        self.cursor.execute(f"Select nameOfSubject from Subjects " 
+                            f"JOIN TeacherSubjects ON TeacherSubjects.idSubject=Subjects.idSubject "
+                            f"JOIN Teachers ON TeacherSubjects.idTeacher=Teachers.idTeacher "
+                            f"WHERE Teachers.idTeacher ='{idTeacher}'")
+        subjects = []
+        while True:
+            sub = self.cursor.fetchone()
+            if sub == None:
+                break
+            subjects.append(sub.nameOfSubject)
+
+        return subjects
+
+    def getTimeTableForTeacher(self, idTeacher):
+        self.cursor.execute(f"EXEC sp_set_session_context 'idTeacher', {idTeacher}")
+        self.cursor.execute(f'Select * FROM TEACHER_TIMETABLE ORDER BY dayOfWeek ASC, time ASC')
+        return self.cursor.fetchall()
