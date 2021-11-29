@@ -1,3 +1,5 @@
+import datetime
+
 import pyodbc
 import bcrypt
 
@@ -17,7 +19,12 @@ class Query:
 
     def getTeachersNames(self):
         self.cursor.execute('Select Name from Teachers')
-        teachersName = self.cursor.fetchall()
+        teachersName = []
+        while True:
+            t = self.cursor.fetchone()
+            if t == None:
+                break
+            teachersName.append(t.Name)
         return teachersName
 
     def getStudentsNames(self):
@@ -35,6 +42,11 @@ class Query:
             f"Update Teachers Set Name = '{newName}', DateOfBirth = '{dateOfBirth}', PhoneNumber ='{phoneNumber}',Mail = '{mail}', Activity = '{activity}' Where idTeacher = '{idLocal}'")
         self.connection_to_db.commit()
 
+    def changeInfoOfStudent(self, idLocal, newName, dateOfBirth, phoneNumber, mail, numClass, activity=1):
+        self.cursor.execute(
+            f"Update Students Set Name = '{newName}', DateOfBirth = '{dateOfBirth}', parentPhoneNumber ='{phoneNumber}',Mail = '{mail}', numClass = '{numClass}', Activity = '{activity}' Where idStudent = '{idLocal}'")
+        self.connection_to_db.commit()
+
 
     def getUserLoginByID(self, idUser):
         self.cursor.execute(f"SELECT login from Users where idUser ='{idUser}'")
@@ -42,6 +54,10 @@ class Query:
 
     def getUserIdByLogin(self, login):
         self.cursor.execute(f"SELECT idUser from Users where login ='{login}'")
+        return self.cursor.fetchone().idUser
+
+    def getidUserByName(self, name):
+        self.cursor.execute(f"SELECT idUser from Teachers where name ='{name}'")
         return self.cursor.fetchone().idUser
 
     def getUserInfo(self, idUser):
@@ -66,13 +82,15 @@ class Query:
 
     def getLogin(self, login):
         self.cursor.execute(f"SELECT login from Users where login ='{login}'")
-        return self.cursor.fetchone()
+        return self.cursor.fetchone().login
+
+
 
     def getPassword(self, login, password):
         self.cursor.execute(f"SELECT password from Users where login ='{login}'")
         ifPass = str.encode(self.cursor.fetchone().password)
         password = bcrypt.hashpw(str.encode(password), key)
-        if ifPass == password:
+        if password == ifPass:
             return True
         return None
 
@@ -159,3 +177,19 @@ class Query:
         self.cursor.execute(f"EXEC sp_set_session_context 'numClass', '{numClass}'")
         self.cursor.execute(f'Select * FROM CLASS_TIMETABLE order by dayOfWeek ASC, time ASC')
         return self.cursor.fetchall()
+
+
+    def register_student(self, login, password, name, dateOfBirth, numClass, parentPhoneNumber, mail):
+        password = bcrypt.hashpw(str.encode(password), key)
+        self.cursor.execute(f"EXEC REGISTER_STUDENTS '{login}', '{password.decode()}','{name}', '{dateOfBirth}',  '{numClass}', '{parentPhoneNumber}', '{mail}'")
+        self.connection_to_db.commit()
+
+    def register_teacher(self, login, password, name, dateOfBirth, experience, phoneNumber, mail):
+        password = bcrypt.hashpw(str.encode(password), key)
+        self.cursor.execute(
+            f"EXEC REGISTER_TEACHERS '{login}', '{password.decode()}','{name}', '{dateOfBirth}',  {experience}, '{phoneNumber}', '{mail}'")
+        self.connection_to_db.commit()
+
+    def getUserIdByStudentId(self, studentId):
+        self.cursor.execute(f"Select idUser from Students where idStudent={studentId}")
+        return self.cursor.fetchone().idUser

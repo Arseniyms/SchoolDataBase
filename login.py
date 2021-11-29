@@ -1,6 +1,9 @@
 from tkinter import *
+
+import director_app
 import mainApp
-import studentApp
+import student_app
+import director_app
 from queries import *
 
 def logInForm():
@@ -29,7 +32,9 @@ def logInForm():
                 if user.status == 'Учитель':
                     mainApp.mainApp(username)
                 elif user.status == 'Ученик':
-                    studentApp.studentApp(username)
+                    student_app.studentApp(username)
+                elif user.status == 'Директор':
+                    director_app.director_app(username)
 
             else:
                 wrong_password_label = Label(window, text='Неправильный логин или пароль', font=label_font, **base_padding, foreground='red')

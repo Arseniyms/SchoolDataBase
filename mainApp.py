@@ -18,7 +18,7 @@ def log_out(window):
 
 def confirm_change(window, user, name_text, date_text, phone_text, mail_text):
     q = Query()
-    q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get(), )
+    q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get() )
     conf = mb.askokcancel("Изменение данных", 'Вы уверены, что хотите изменить данные?')
     if conf:
         window.destroy()

@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk
-import studentApp
+
+import director_app
+import student_app
 import mainApp
 from queries import Query
 
@@ -12,7 +14,9 @@ def exit_clicked(window, user):
     if user.status == 'Учитель':
         mainApp.mainApp(q.getUserLoginByID(user.idUser))
     elif user.status == 'Ученик':
-        studentApp.studentApp(q.getUserLoginByID(user.idUser))
+        student_app.studentApp(q.getUserLoginByID(user.idUser))
+    elif user.status=='Директор':
+        director_app.director_app(q.getUserLoginByID(user.idUser))
 
 
 

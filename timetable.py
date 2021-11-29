@@ -1,6 +1,6 @@
 from tkinter import *
 import mainApp
-import studentApp
+import student_app
 from queries import Query
 
 label_font = ('Times New Roman', 10)
@@ -12,7 +12,7 @@ def exit_clicked(window, user):
     if user.status == 'Учитель':
         mainApp.mainApp(q.getUserLoginByID(user.idUser))
     elif user.status == 'Ученик':
-        studentApp.studentApp(q.getUserLoginByID(user.idUser))
+        student_app.studentApp(q.getUserLoginByID(user.idUser))
 
 def show_table_for_student(window, student):
     window.destroy()
