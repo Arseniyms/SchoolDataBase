@@ -128,7 +128,8 @@ class Query:
             cl = self.cursor.fetchone()
             if cl == None:
                 break
-            classes.append(cl.numClass)
+            if cl.numClass !='':
+                classes.append(cl.numClass)
         return classes
 
     def getProgressForClass(self, numClass):
@@ -174,7 +175,7 @@ class Query:
         self.connection_to_db.commit()
 
     def getTimeTableForClass(self, numClass):
-        self.cursor.execute(f"EXEC sp_set_session_context 'numClass', '{numClass}'")
+        self.cursor.execute(f"EXEC sp_set_session_context 'NumClass', '{numClass}'")
         self.cursor.execute(f'Select * FROM CLASS_TIMETABLE order by dayOfWeek ASC, time ASC')
         return self.cursor.fetchall()
 
@@ -193,3 +194,44 @@ class Query:
     def getUserIdByStudentId(self, studentId):
         self.cursor.execute(f"Select idUser from Students where idStudent={studentId}")
         return self.cursor.fetchone().idUser
+
+
+
+    def addSubject(self, name, description):
+        self.cursor.execute(f"INSERT INTO Subjects (NameOfSubject, Description)VALUES ('{name}', '{description}')")
+        self.connection_to_db.commit()
+
+    def getSubjects(self):
+        self.cursor.execute(f"Select NameOfSubject from Subjects")
+        subjects = []
+        while True:
+            sub = self.cursor.fetchone()
+            if sub == None:
+                break
+            if sub.NameOfSubject != '':
+                subjects.append(sub.NameOfSubject)
+        return subjects
+
+    def changeSubject(self, currentName,name, description, activity):
+        self.cursor.execute(f"Update Subjects Set NameOfSubject='{name}', Description = '{description}', Activity = '{activity}' where NameOfSubject = '{currentName}'")
+        self.connection_to_db.commit()
+
+    def getSubjectByName(self, name):
+        self.cursor.execute(f"Select * from Subjects where NameOfSubject = '{name}'")
+        return self.cursor.fetchone()
+
+    def getClassByNum(self, num):
+        self.cursor.execute(f"Select * from Classes where NumClass = '{num}'")
+        return self.cursor.fetchone()
+
+    def addClass(self, name,max):
+        self.cursor.execute(f"INSERT INTO Classes (NumClass, MaxQuantity) VALUES ('{name}', '{max}')")
+        self.connection_to_db.commit()
+
+    def changeClass(self, num ,newNum, max):
+        self.cursor.execute(f"Update Classes Set NumClass='{newNum}', MaxQuantity = '{max}' where NumClass = '{num}'")
+        self.connection_to_db.commit()
+
+    def getStudentByClass(self, numClass):
+        self.cursor.execute(f"Select * from Students where NumClass='{numClass}'")
+        return self.cursor.fetchone()

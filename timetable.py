@@ -1,20 +1,68 @@
 from tkinter import *
+from tkinter import ttk
+
+import director_app
 import mainApp
 import student_app
 from queries import Query
 
 label_font = ('Times New Roman', 10)
 
+dir_login = ''
 
-def exit_clicked(window, user):
-    q = Query()
+def exit_clicked(window, user, dir = None):
+    if user==None and dir:
+        window.destroy()
+        director_app.director_app(dir_login)
+    elif dir:
+        show_table_for_dir(window, user)
+    else:
+        q = Query()
+        window.destroy()
+        if user.status == 'Учитель':
+            mainApp.mainApp(q.getUserLoginByID(user.idUser))
+        elif user.status == 'Ученик':
+            student_app.studentApp(q.getUserLoginByID(user.idUser))
+
+
+def show_table_for_dir(window, user):
     window.destroy()
-    if user.status == 'Учитель':
-        mainApp.mainApp(q.getUserLoginByID(user.idUser))
-    elif user.status == 'Ученик':
-        student_app.studentApp(q.getUserLoginByID(user.idUser))
+    window = Tk()
+    window.title("Расписание")
+    window.geometry('500x250')
+    window['background'] = 'white'
+    q = Query()
+    if user != None:
+        global dir_login
+        dir_login = q.getUserLoginByID(user.idUser)
+    name_label = Label(window, text='Выберите класс или учителя', font=label_font, fg="black", bg="white")
+    name_label.grid(column=0, row = 0);
+    class_box = ttk.Combobox(window, values=q.getClasses(), font=label_font, state='readonly')
+    class_box.grid(column=0, row=1, sticky='w')
+    name_box = ttk.Combobox(window, values=q.getTeachersNames(), font=label_font, state='readonly')
+    name_box.grid(column=0, row=2, sticky='w')
 
-def show_table_for_student(window, student):
+    def class_chosen(event):
+        stud = q.getStudentByClass(class_box.get())
+        stud = q.getUserInfo(stud.idUser)
+        show_table_for_student(window, stud, True)
+
+    def name_chosen(event):
+        idUser = q.getidUserByName(name_box.get())
+        teacher = q.getUserInfo(idUser)
+        show_table_for_teacher(window, teacher, True)
+
+    class_box.bind('<<ComboboxSelected>>', class_chosen)
+    name_box.bind('<<ComboboxSelected>>', name_chosen)
+
+    exit_label = Button(window, text='Назад', fg="black", bg="white",
+                        command=lambda: exit_clicked(window, None, dir_login))
+    exit_label.grid(column=0, row=10, sticky='w')
+
+    window.mainloop()
+
+
+def show_table_for_student(window, student, dir=None):
     window.destroy()
     window = Tk()
     window.title("Расписание")
@@ -53,13 +101,13 @@ def show_table_for_student(window, student):
             sub_label.grid(column=j + 1, row=i + 2, sticky='w')
 
 
-    exit_label = Button(window, text='Назад', fg="black", bg="white", command=lambda: exit_clicked(window, student))
+    exit_label = Button(window, text='Назад', fg="black", bg="white", command=lambda: exit_clicked(window, student, dir))
     exit_label.grid(column=0, row=10, sticky='w')
 
 
     window.mainloop()
 
-def show_table_for_teacher(window, teacher):
+def show_table_for_teacher(window, teacher, dir=None):
     window.destroy()
     window = Tk()
     window.title("Расписание")
@@ -96,7 +144,7 @@ def show_table_for_teacher(window, teacher):
             sub_label = Label(window, text= timetable_matrix[i][j] if timetable_matrix[i][j] != 0 else '---' , font=('Times New Roman', 8), fg="black", bg="white")
             sub_label.grid(column=j + 1, row=i+2, sticky='w')
 
-    exit_label = Button(window, text='Назад', fg="black", bg="white", command=lambda: exit_clicked(window, teacher))
+    exit_label = Button(window, text='Назад', fg="black", bg="white", command=lambda: exit_clicked(window, teacher, dir))
     exit_label.grid(column=0, row=10, sticky='w')
 
 

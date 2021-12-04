@@ -2,6 +2,8 @@ import tkinter
 from tkinter import *
 from tkinter import ttk
 
+import dir_class
+import dir_subjects
 import login
 import mainApp
 import progress
@@ -21,18 +23,18 @@ def exit_click(window, user):
     window.destroy()
     director_app(q.getUserLoginByID(user.idUser))
 
-def confirm_change_student(window, user, name_text, date_text, phone_text, mail_text, class_text):
+def confirm_change_student(window, user, name_text, date_text, phone_text, mail_text, class_text, activity_text):
     q = Query()
     conf = mb.askokcancel("Изменение данных", 'Вы уверены, что хотите изменить данные?')
     if conf:
         q.changeInfoOfStudent(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get(),
-                              class_text.get())
+                              class_text.get(), activity_text.get())
         window.destroy()
         director_app(q.getUserLoginByID(user.idUser))
 
-def confirm_change(window, user, name_text, date_text, phone_text, mail_text):
+def confirm_change(window, user, name_text, date_text, phone_text, mail_text, activity_text):
     q = Query()
-    q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get())
+    q.changeInfoOfUser(user.idLocal, name_text.get(), date_text.get(), phone_text.get(), mail_text.get(), activity_text.get())
     conf = mb.askokcancel("Изменение данных", 'Вы уверены, что хотите изменить данные?')
     if conf:
         window.destroy()
@@ -121,8 +123,14 @@ def change_info_student(window, user):
     mail_text.insert(1, user.mail)
     mail_text.grid(column=0, row=5, sticky='e')
 
+    activity_label = Label(window, text='Активность', font=label_font, fg="black", bg="white")
+    activity_label.grid(column=0, row=6, sticky='w')
+    activity_text = ttk.Combobox(window, values=[0,1], state='readonly')
+    activity_text.set(user.activity)
+    activity_text.grid(column=0, row=6, sticky='e')
+
     confirm_button = Button(window, text='Подтвердить изменения', fg="black", bg="white",
-                            command=lambda: confirm_change_student(window, user, name_text, date_text, phone_text, mail_text, class_text))
+                            command=lambda: confirm_change_student(window, user, name_text, date_text, phone_text, mail_text, class_text, activity_text))
     confirm_button.grid(column=0, row=10, sticky='e')
 
     password_button = Button(window, text='Изменить пароль', fg="black", bg="white",
@@ -312,8 +320,14 @@ def change_info(window, user):
     mail_text.insert(1, user.mail)
     mail_text.grid(column=0, row=4, sticky='e')
 
+    activity_label = Label(window, text='Активность', font=label_font, fg="black", bg="white")
+    activity_label.grid(column=0, row=5, sticky='w')
+    activity_text = ttk.Combobox(window, values=[0,1], state='readonly')
+    activity_text.set(user.activity)
+    activity_text.grid(column=0, row=5, sticky='e')
+
     confirm_button = Button(window, text='Подтвердить изменения', fg="black", bg="white",
-                            command=lambda: confirm_change(window, user, name_text, date_text, phone_text, mail_text))
+                            command=lambda: confirm_change(window, user, name_text, date_text, phone_text, mail_text, activity_text))
     confirm_button.grid(column=0, row=10, sticky='e')
 
     password_button = Button(window, text='Изменить пароль', fg="black", bg="white",
@@ -346,7 +360,7 @@ def director_app(login):
 
 
     def class_chosen(event):
-        window.geometry('800x250')
+        window.geometry('900x250')
         id_and_name_students = q.getStudentsNamesByClass(class_box.get())
         student_names = []
         for i in range(len(id_and_name_students)):
@@ -360,7 +374,7 @@ def director_app(login):
                 if id_and_name_students[i][1] == students_box.get():
                     idUser = id_and_name_students[i][0]
             student = q.getUserInfo(q.getUserIdByStudentId(idUser))
-            change_stud_button = Button(window, text='Изменение данных ученика', fg="black", bg="white", command= lambda: change_info_student(window, student))
+            change_stud_button = Button(window, text='Посмотреть/Измененить данные ученика', fg="black", bg="white", command= lambda: change_info_student(window, student))
             change_stud_button.grid(sticky="W", column=3, row=1)
 
         students_box.bind('<<ComboboxSelected>>', student_chosen)
@@ -378,11 +392,12 @@ def director_app(login):
     teacher_box.grid(column=1, row=2, sticky='w')
 
     def teacher_chosen(event):
+        window.geometry("900x250")
         idUser = q.getidUserByName(teacher_box.get())
         teacher = q.getUserInfo(idUser)
-        change_teach_button = Button(window, text='Изменение данных учителя', fg="black", bg="white",
+        change_teach_button = Button(window, text='Посмотреть/Измененить данные учителя', fg="black", bg="white",
                                      command=lambda: change_info(window, teacher))
-        change_teach_button.grid(sticky="W", column=3, row=2)
+        change_teach_button.grid(sticky="W", column=2, row=2)
 
 
 
@@ -391,21 +406,21 @@ def director_app(login):
 
 
     reg_subj_button = Button(window, text='Добавление предмета', fg="black", bg="white",
-                             command=None)
+                             command=lambda: dir_subjects.add_subject())
     reg_subj_button.grid(sticky="W", column=0, row=3)
     change_subj_button = Button(window, text='Изменение предмета', fg="black", bg="white",
-                                command=None)
+                                command=lambda: dir_subjects.change_subject())
     change_subj_button.grid(sticky="W", column=1, row=3)
 
-    reg_class_button = Button(window, text='Добавление предмета', fg="black", bg="white",
-                              command=None)
+    reg_class_button = Button(window, text='Добавление класса', fg="black", bg="white",
+                              command=lambda: dir_class.add_class())
     reg_class_button.grid(sticky="W", column=0, row=4)
-    change_class_button = Button(window, text='Изменение предмета', fg="black", bg="white",
-                                 command=None)
+    change_class_button = Button(window, text='Изменение класса', fg="black", bg="white",
+                                 command=lambda: dir_class.change_class())
     change_class_button.grid(sticky="W", column=1, row=4)
 
     timetable_button = Button(window, text='Просмотр расписания', fg="black", bg="white",
-                              command=None)
+                              command=lambda: timetable.show_table_for_dir(window, user))
     timetable_button.grid(sticky="W", column=0, row=5)
     change_timetable_button = Button(window, text='Изменение расписания', fg="black", bg="white",
                                      command=None)
