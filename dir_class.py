@@ -1,13 +1,7 @@
-import tkinter
 from tkinter import *
 from tkinter import ttk
 
-import login
-import mainApp
-import progress
-import timetable
 from queries import Query
-import tkinter.messagebox as mb
 
 label_font = ('Times New Roman', 10)
 

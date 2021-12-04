@@ -60,6 +60,10 @@ class Query:
         self.cursor.execute(f"SELECT idUser from Teachers where name ='{name}'")
         return self.cursor.fetchone().idUser
 
+    def getidTeacherByName(self, name):
+        self.cursor.execute(f"SELECT idTeacher from Teachers where name ='{name}'")
+        return self.cursor.fetchone().idTeacher
+
     def getUserInfo(self, idUser):
         self.cursor.execute(f"SELECT idTeacher from Teachers where idUser ='{idUser}'")
         ifTeacher = self.cursor.fetchone()
@@ -114,6 +118,33 @@ class Query:
             subjects.append(sub.nameOfSubject)
 
         return subjects
+
+    def getSubjectTeachers(self, nameSubject):
+        self.cursor.execute(f"""Select Distinct Name from Teachers
+	                            JOIN TeacherSubjects ON TeacherSubjects.idTeacher=Teachers.idTeacher
+	                            JOIN Subjects ON TeacherSubjects.idSubject=Subjects.idSubject
+		                        WHERE Subjects.NameOfSubject = '{nameSubject}'""")
+        teachers = []
+        while True:
+            sub = self.cursor.fetchone()
+            if sub == None:
+                break
+            teachers.append(sub.Name)
+
+        return teachers
+
+    def getIdTeacherSubject(self, idTeacher, idSubject):
+        self.cursor.execute(f"""Select idTeacherSubject from TeacherSubjects Where idTeacher = '{idTeacher}' and idSubject = '{idSubject}'""")
+        return self.cursor.fetchone().idTeacherSubject
+
+    def addTimetable(self, idTeacherSubject, numClass, dayOfWeek, time):
+        self.cursor.execute(f"""INSERT INTO Timetable(idTeacherSubject, numClass, dayOfWeek, time) 
+                                VALUES ('{idTeacherSubject}', '{numClass}', '{dayOfWeek}', '{time}')""")
+        self.connection_to_db.commit()
+
+    def anchorTeacher(self, idTeacher, idSubject):
+        self.cursor.execute(f"exec ANCHOR_TEACHER '{idTeacher}', '{idSubject}'")
+        self.cursor.commit()
 
     def getTimeTableForTeacher(self, idTeacher):
         self.cursor.execute(f"EXEC sp_set_session_context 'idTeacher', {idTeacher}")

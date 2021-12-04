@@ -7,6 +7,7 @@ import dir_subjects
 import login
 import mainApp
 import progress
+import teacher_subjects
 import timetable
 from queries import Query
 import tkinter.messagebox as mb
@@ -423,14 +424,14 @@ def director_app(login):
                               command=lambda: timetable.show_table_for_dir(window, user))
     timetable_button.grid(sticky="W", column=0, row=5)
     change_timetable_button = Button(window, text='Изменение расписания', fg="black", bg="white",
-                                     command=None)
+                                     command=lambda: timetable.change_timetable(window, user))
     change_timetable_button.grid(sticky="W", column=1, row=5)
 
     anchor_button = Button(window, text='Закрепить учителя \nза предметом', fg="black", bg="white",
-                           command=None)
+                           command=lambda: teacher_subjects.anchor_teacher(window))
     anchor_button.grid(sticky="W", column=0, row=6)
     show_anchor_button = Button(window, text='Посмотреть закрепленных учителей\n за предметом', fg="black", bg="white",
-                                command=None)
+                                command=lambda: teacher_subjects.show_teacher_subjects(window))
     show_anchor_button.grid(sticky="W", column=1, row=6)
 
     progress_button = Button(window, text='Посмотреть успеваемость', fg="black", bg="white",
